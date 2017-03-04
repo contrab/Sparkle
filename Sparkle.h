@@ -6,6 +6,19 @@
  * these LED definitions to control the LEDs assigned to it.
  */
 
+/**
+ * You can save memory on your Arduino by defining only the Sparkle/LED features
+ * that your code/project is using. Comment out a definition below to disable.
+ * If you only want to control LEDs individually (without the Sparkle class), you
+ * can comment out the __USE_SPARKLE__ line.
+ */
+#define __LED_TIMED_ENABLED__ 1
+#define __LED_BLINK_ENABLED__ 1
+#define __LED_BLINK_RANDOM_ENABLED__ 1
+#define __LED_TIMED_ENABLED__ 1
+#define __LED_FADE_ENABLED__ 1
+#define __USE_SPARKLE__ 1
+
 #ifndef _SPARKLE_H_
 #define _SPARKLE_H_
 
@@ -37,11 +50,19 @@ enum LedColor {
  */
 enum DisplayMode {
   DISABLED = 0,
-  MANUAL,
+#ifdef __LED_TIMED_ENABLED__
   TIMED,
+#endif
+#ifdef __LED_BLINK_ENABLED__
   BLINK,
+#endif
+#ifdef __LED_BLINK_RANDOM_ENABLED__
   BLINK_RANDOM,
-  FADE       // For PWM pins only
+#endif
+#ifdef __LED_FADE_ENABLED__
+  FADE,       // For PWM pins only
+#endif
+  MANUAL
 };
 
 /**
@@ -92,15 +113,21 @@ class LedDef : ILedDef {
   bool pwm;
   bool ledIsOn;
   enum DisplayMode displayMode;
+#ifdef __LED_BLINK_ENABLED__
   unsigned short blinkOffDuration;
   unsigned short blinkOnDuration;
+#endif
+#ifdef __LED_TIMED_ENABLED__
   unsigned short timerDuration;
+#endif
+#ifdef __LED_BLINK_RANDOM_ENABLED__
   unsigned short randMinOffDuration;
   unsigned short randMaxOffDuration;
   unsigned short randMinOnDuration;
   unsigned short randMaxOnDuration;
   unsigned short randOffDuration;
   unsigned short randOnDuration;
+#endif
   unsigned long lastTime;
 
   protected:
@@ -120,15 +147,21 @@ class LedDef : ILedDef {
          commonCathode(ledCommonCathode),
          pwm(pwmCapable),
          displayMode(DISABLED),
+#ifdef __LED_BLINK_ENABLED__
          blinkOnDuration(0),
          blinkOffDuration(0),
+#endif
+#ifdef __LED_TIMED_ENABLED__
          timerDuration(0),
+#endif
+#ifdef __LED_BLINK_RANDOM_ENABLED__
          randMinOffDuration(0),
          randMaxOffDuration(0),
          randMinOnDuration(0),
          randMaxOnDuration(0),
          randOffDuration(0),
          randOnDuration(0),
+#endif
          lastTime(0) {
   }
 
@@ -145,14 +178,18 @@ class LedDef : ILedDef {
    * do that, call startBlink().
    * If onDuration or offDuration are zero, both settings are ignored.
    */
+#ifdef __LED_BLINK_ENABLED__
   void setBlink(unsigned short onDuration, unsigned short offDuration);
+#endif
 
   /**
    * Start blinking, using the parameters set by setBlink.
    * If setBlink() wasn't called to initialize the blink durations, then
    * startBlink() doesn't do anything.
    */
+#ifdef __LED_BLINK_ENABLED__
   void startBlink();
+#endif
 
   /**
    * Set the random blink mode with the max/min durations for both on and off.
@@ -178,7 +215,9 @@ class LedDef : ILedDef {
    * do that, call startTimer().
    * If duration is zero, the setting is ignored.
    */
+#ifdef __LED_TIMED_ENABLED__
   void setTimer(unsigned short duration);
+#endif
 
   /**
    * Turn on the LED for the duration set in setTimer.
@@ -193,6 +232,7 @@ class LedDef : ILedDef {
  * The Sparkle class manages LEDs that are assigned to it. Enables more complex behaviors,
  * especially in groups.
  */
+#ifdef __USE_SPARKLE__
 class Sparkle {
   private:
   LedDef *leds;
@@ -241,5 +281,6 @@ class Sparkle {
    */
    void update();
 };
+#endif //__USE_SPARKLE__
 
 #endif

@@ -72,18 +72,21 @@
    * do that, call startBlink().
    * If onDuration or offDuration are zero, both settings are ignored.
    */
+#ifdef __LED_BLINK_ENABLED__
   void LedDef::setBlink(unsigned short onDuration, unsigned short offDuration) {
     if ((onDuration > 0) && (offDuration > 0)) {
       blinkOnDuration = onDuration;
       blinkOffDuration = offDuration;
     }
   }
+#endif
 
   /**
    * Start blinking, using the parameters set by setBlink.
    * If setBlink() wasn't called to initialize the blink durations, then
    * startBlink() doesn't do anything.
    */
+#ifdef __LED_BLINK_ENABLED__
   void LedDef::startBlink() {
     if ((blinkOnDuration > 0) && (blinkOffDuration > 0)) {
       on();
@@ -91,6 +94,7 @@
       displayMode = BLINK;
     }
   }
+#endif
 
   /**
    * Set the random blink mode with the max/min durations for both on and off.
@@ -98,6 +102,7 @@
    * mode. To do that, call startRandomBlink().
    * If any argument is zero, all settings are ignored.
    */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
   void LedDef::setRandomBlink(unsigned short minOffDuration,
                               unsigned short maxOffDuration,
                               unsigned short minOnDuration,
@@ -110,12 +115,14 @@
          randMaxOnDuration = maxOnDuration;
     }
   }
+#endif
 
   /**
    * Start random blinking, using the parameters set by setRandomBlink.
    * If setRandomBlink() wasn't called to initialize the blink durations, then
    * startRandomBlink() doesn't do anything.
    */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
   void LedDef::startRandomBlink() {
     if ((randMinOffDuration > 0) && (randMaxOffDuration > 0) &&
         (randMinOnDuration > 0) && (randMaxOnDuration > 0)) {
@@ -132,6 +139,7 @@
       displayMode = BLINK_RANDOM;
     }
   }
+#endif
 
   /**
    * Set the time'd LED's duration.
@@ -139,17 +147,20 @@
    * do that, call startTimer().
    * If duration is zero, the setting is ignored.
    */
+#ifdef __LED_TIMED_ENABLED__
   void LedDef::setTimer(unsigned short duration) {
     if (duration > 0) {
       timerDuration = duration;
     }
   }
+#endif
 
   /**
    * Turn on the LED for the duration set in setTimer.
    * If setTimer() wasn't called to initialize the duration, then
    * startTimer() doesn't do anything.
    */
+#ifdef __LED_TIMED_ENABLED__
   void LedDef::startTimer() {
     if (timerDuration > 0) {
       on();
@@ -157,6 +168,7 @@
       displayMode = TIMED;
     }
   }
+#endif
 
   /**
    * Call periodically to update the state.
@@ -165,6 +177,7 @@
     unsigned long now=0;
 
     switch (displayMode) {
+#ifdef __LED_BLINK_ENABLED__
       case BLINK:
         now = millis();
         if (ledIsOn) {
@@ -181,26 +194,30 @@
           }
         }
         break;
+#endif
 
+#ifdef __LED_BLINK_RANDOM_ENABLED__
       case BLINK_RANDOM:
         now = millis();
         if (ledIsOn) {
           // LED is currently on. See if on duration has expired.
-          if (now >= (lastTime + blinkOnDuration)) {
+          if (now >= (lastTime + randOnDuration)) {
             off();
             lastTime = now;
             randOffDuration = random(randMinOffDuration, randMaxOffDuration);
           }
         } else {
           // LED is currently off. See if off duration has expired.
-          if (now >= (lastTime + blinkOffDuration)) {
+          if (now >= (lastTime + randOffDuration)) {
             on();
             lastTime = now;
             randOnDuration = random(randMinOnDuration, randMaxOnDuration);
           }
         }
         break;
+#endif
 
+#ifdef __LED_TIMED_ENABLED__
       case TIMED:
         if (ledIsOn) {
           // LED is currently on. See if on duration has expired.
@@ -210,12 +227,15 @@
           }
         }
         break;
+#endif
 
+#ifdef __LED_FADE_ENABLED__
       case FADE:
         if (pwm) {
           //TODO
         }
         break;
+#endif
 
       case MANUAL:
       default:
@@ -225,6 +245,7 @@
 
 // Sparkle Class /////////////////////////////////////////////////////////////////
 
+#ifdef __USE_SPARKLE__
 /**
  * Used to set the list of LEDs to manage to digital output.
  */
@@ -284,3 +305,4 @@ void Sparkle::update() {
     leds[i].update();
   }
 }
+#endif //__USE_SPARKLE__
