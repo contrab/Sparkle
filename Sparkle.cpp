@@ -298,6 +298,39 @@ void Sparkle::turnOffAllColor(enum LedColor color) {
 }
 
 /**
+ * Set the random blink mode with the max/min durations for both on and off.
+ * This does not start the LEDs blinking randomly. To do that, call
+ * turnOnRandomly().
+ * If any argument is zero, all settings are ignored.
+ */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
+void Sparkle::setRandomly(unsigned short minOffDuration,
+                          unsigned short maxOffDuration,
+                          unsigned short minOnDuration,
+                          unsigned short maxOnDuration) {
+  if ((minOffDuration > 0) && (maxOffDuration > 0) &&
+      (minOnDuration > 0) && (maxOnDuration > 0)) {
+    for (unsigned short i=0; i<count; i++) {
+      leds[i].setRandomBlink(minOffDuration, maxOffDuration,
+                             minOnDuration, maxOnDuration);
+    }
+  }
+}
+#endif
+
+/**
+ * Make the LEDs all turn on and off randomly. Set up with setRandomly() first,
+ * or this call will have no effect.
+ */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
+void Sparkle::turnOnRandomly() {
+  for (unsigned short i=0; i<count; i++) {
+    leds[i].startRandomBlink();
+  }
+}
+#endif
+
+/**
  * Update the status of the LEDs under Sparkle control.
  */
 void Sparkle::update() {

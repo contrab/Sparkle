@@ -1,5 +1,5 @@
 /**
- * This is a simple Arduino library for controlling LEDs.
+ * This is an Arduino library for controlling LEDs, singly or as a group.
  *
  * It contains two classes: LedDef and Sparkle. LedDef defines a single
  * LED (characteristics such as pin[s], color, etc), and Sparkle uses
@@ -12,11 +12,11 @@
  * If you only want to control LEDs individually (without the Sparkle class), you
  * can comment out the __USE_SPARKLE__ line.
  */
-#define __LED_TIMED_ENABLED__ 1
-#define __LED_BLINK_ENABLED__ 1
+//#define __LED_TIMED_ENABLED__ 1
+//#define __LED_BLINK_ENABLED__ 1
 #define __LED_BLINK_RANDOM_ENABLED__ 1
-#define __LED_TIMED_ENABLED__ 1
-#define __LED_FADE_ENABLED__ 1
+//#define __LED_TIMED_ENABLED__ 1
+//#define __LED_FADE_ENABLED__ 1
 #define __USE_SPARKLE__ 1
 
 #ifndef _SPARKLE_H_
@@ -197,17 +197,21 @@ class LedDef : ILedDef {
    * mode. To do that, call startRandomBlink().
    * If any argument is zero, all settings are ignored.
    */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
   void setRandomBlink(unsigned short minOffDuration,
                       unsigned short maxOffDuration,
                       unsigned short minOnDuration,
                       unsigned short maxOnDuration);
+#endif
 
   /**
    * Start random blinking, using the parameters set by setRandomBlink.
    * If setRandomBlink() wasn't called to initialize the blink durations, then
    * startRandomBlink() doesn't do anything.
    */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
   void startRandomBlink();
+#endif
 
   /**
    * Set the time'd LED's duration.
@@ -275,6 +279,27 @@ class Sparkle {
    * color to turn off.
    */
    void turnOffAllColor(enum LedColor color);
+
+  /**
+   * Set the random blink mode with the max/min durations for both on and off.
+   * This does not start the LEDs blinking randomly. To do that, call
+   * turnOnRandomly().
+   * If any argument is zero, all settings are ignored.
+   */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
+  void setRandomly(unsigned short minOffDuration,
+                  unsigned short maxOffDuration,
+                  unsigned short minOnDuration,
+                  unsigned short maxOnDuration);
+#endif
+
+  /**
+   * Make the LEDs all turn on and off randomly. Set up with setRandomly() first,
+   * or this call will have no effect.
+   */
+#ifdef __LED_BLINK_RANDOM_ENABLED__
+  void turnOnRandomly();
+#endif
 
   /**
    * Update the status of the LEDs under Sparkle control.
