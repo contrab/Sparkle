@@ -12,11 +12,11 @@
  * If you only want to control LEDs individually (without the Sparkle class), you
  * can comment out the __USE_SPARKLE__ line.
  */
-//#define __LED_TIMED_ENABLED__ 1
-//#define __LED_BLINK_ENABLED__ 1
+#define __LED_TIMED_ENABLED__ 1
+#define __LED_BLINK_ENABLED__ 1
 #define __LED_BLINK_RANDOM_ENABLED__ 1
-//#define __LED_TIMED_ENABLED__ 1
-//#define __LED_FADE_ENABLED__ 1
+#define __LED_TIMED_ENABLED__ 1
+#define __LED_FADE_ENABLED__ 1
 #define __USE_SPARKLE__ 1
 
 #ifndef _SPARKLE_H_
